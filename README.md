@@ -14,7 +14,8 @@
 
 ## 截图
 
-<!-- TODO: 添加截图 -->
+<!-- TODO: 添加截图 -->![Uploading image.png…]()
+
 
 ## 下载
 
