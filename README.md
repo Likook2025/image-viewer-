@@ -14,7 +14,9 @@
 
 ## 截图
 
-<!-- TODO: 添加截图 -->![Uploading image.png…]()
+<!-- TODO: 添加截图 -->
+<img width="1919" height="1030" alt="image" src="https://github.com/user-attachments/assets/20ef4aee-b340-40fc-b6c7-44b8b9eebd4e" />
+
 
 
 ## 下载
