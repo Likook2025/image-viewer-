@@ -91,4 +91,4 @@ pyinstaller --onefile --windowed --name "图片筛选工具" --icon icon.ico ima
 
 ## 作者
 
-- [Ilya](https://github.com/your-username)
+- [Likook](https://github.com/Likook2025)
