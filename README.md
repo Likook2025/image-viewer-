@@ -15,9 +15,6 @@
 ## 截图
 
 <!-- TODO: 添加截图 -->
-<img width="1919" height="1030" alt="image" src="https://github.com/user-attachments/assets/20ef4aee-b340-40fc-b6c7-44b8b9eebd4e" />
-
-
 
 ## 下载
 
@@ -94,4 +91,4 @@ pyinstaller --onefile --windowed --name "图片筛选工具" --icon icon.ico ima
 
 ## 作者
 
-- [Likook](https://github.com/Likook2025)
+- [Ilya](https://github.com/your-username)

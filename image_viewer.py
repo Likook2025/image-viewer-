@@ -298,6 +298,16 @@ class ImageViewer:
         right_nav = tk.Frame(nav_card, bg=COLORS['bg_card'])
         right_nav.pack(side=tk.RIGHT, padx=15, pady=4)
 
+        # 重置缩放
+        self.reset_nav_btn = RoundedButton(right_nav, text="重置", width=48, height=24,
+                                           bg=COLORS['bg_secondary'],
+                                           hover_bg=COLORS['border'],
+                                           text_color=COLORS['text_primary'],
+                                           font=('Microsoft YaHei UI', 8),
+                                           radius=4,
+                                           command=self.reset_zoom)
+        self.reset_nav_btn.pack(side=tk.LEFT, padx=(0, 6))
+
         # 缩放控件
         self.zoom_out_small = tk.Label(right_nav, text="➖", font=('Microsoft YaHei UI', 11),
                                        fg=COLORS['text_secondary'], bg=COLORS['bg_card'],
@@ -381,6 +391,7 @@ class ImageViewer:
             ("← →", "切换图片"),
             ("滚轮", "缩放图片"),
             ("拖动", "平移图片"),
+            ("S", "保存图片"),
             ("ESC", "退出程序"),
         ]
         for key, desc in shortcuts:
@@ -430,17 +441,6 @@ class ImageViewer:
                                   fg=COLORS['text_tertiary'],
                                   bg=COLORS['bg_card'], anchor='w')
         self.path_label.pack(side=tk.LEFT, fill=tk.X, expand=True)
-
-        # 输出文件夹按钮
-        self.output_btn = RoundedButton(path_bar, text="📤  输出文件夹",
-                                        width=110, height=30,
-                                        bg=COLORS['bg_secondary'],
-                                        hover_bg=COLORS['border'],
-                                        text_color=COLORS['text_primary'],
-                                        font=('Microsoft YaHei UI', 9),
-                                        radius=6,
-                                        command=self.select_output_dir)
-        self.output_btn.pack(side=tk.RIGHT, padx=(10, 0))
 
         # 画布
         self.canvas = tk.Canvas(canvas_container, bg=COLORS['bg_canvas'],
@@ -495,42 +495,6 @@ class ImageViewer:
                                         highlightthickness=0, bd=0)
         self.progress_canvas.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=20)
 
-        # 缩放控制
-        zoom_control = tk.Frame(bottom_bar, bg=COLORS['bg_primary'])
-        zoom_control.pack(side=tk.RIGHT)
-
-        # 重置缩放
-        self.reset_zoom_btn = RoundedButton(zoom_control, text="重置缩放",
-                                            width=80, height=32,
-                                            bg=COLORS['bg_card'],
-                                            hover_bg=COLORS['bg_secondary'],
-                                            text_color=COLORS['text_primary'],
-                                            font=('Microsoft YaHei UI', 9),
-                                            radius=6,
-                                            command=self.reset_zoom)
-        self.reset_zoom_btn.pack(side=tk.LEFT, padx=(0, 8))
-
-        # 放大缩小
-        self.zoom_out_btn = RoundedButton(zoom_control, text="➖",
-                                          width=36, height=32,
-                                          bg=COLORS['bg_card'],
-                                          hover_bg=COLORS['bg_secondary'],
-                                          text_color=COLORS['text_primary'],
-                                          font=('Microsoft YaHei UI', 11),
-                                          radius=6,
-                                          command=self.zoom_out)
-        self.zoom_out_btn.pack(side=tk.LEFT, padx=(0, 4))
-
-        self.zoom_in_btn = RoundedButton(zoom_control, text="➕",
-                                         width=36, height=32,
-                                         bg=COLORS['bg_card'],
-                                         hover_bg=COLORS['bg_secondary'],
-                                         text_color=COLORS['text_primary'],
-                                         font=('Microsoft YaHei UI', 11),
-                                         radius=6,
-                                         command=self.zoom_in)
-        self.zoom_in_btn.pack(side=tk.LEFT, padx=4)
-
         # 状态栏
         status_frame = tk.Frame(main_container, bg=COLORS['bg_primary'])
         status_frame.pack(fill=tk.X, pady=(8, 0))
@@ -541,7 +505,7 @@ class ImageViewer:
                                     bg=COLORS['bg_primary'])
         self.status_label.pack(side=tk.LEFT)
 
-        shortcut_text = "快捷键: ← → 切换 | 鼠标滚轮缩放 | 拖动平移 | ESC 退出"
+        shortcut_text = "快捷键: ← → 切换 | S 保存 | 滚轮缩放 | 拖动平移 | ESC 退出"
         shortcut_label = tk.Label(status_frame, text=shortcut_text,
                                  font=('Microsoft YaHei UI', 9),
                                  fg=COLORS['text_tertiary'],
@@ -573,6 +537,8 @@ class ImageViewer:
         self.root.bind("<Left>", lambda e: self.prev_image())
         self.root.bind("<Right>", lambda e: self.next_image())
         self.root.bind("<Escape>", lambda e: self.root.quit())
+        self.root.bind("<s>", lambda e: self.save_current_image())
+        self.root.bind("<S>", lambda e: self.save_current_image())
         self.root.bind("<Configure>", self.on_window_resize)
 
         self.canvas.bind("<MouseWheel>", self.on_mouse_wheel)
@@ -845,17 +811,16 @@ class ImageViewer:
         filename = os.path.basename(source_path)
         dest_path = os.path.join(self.output_dir, filename)
 
+        # 检查是否已存在同名文件
         if os.path.exists(dest_path):
-            name, ext = os.path.splitext(filename)
-            counter = 1
-            while os.path.exists(dest_path):
-                dest_path = os.path.join(self.output_dir, f"{name}_{counter}{ext}")
-                counter += 1
+            self.show_toast(f"已存在: {filename}", "warning")
+            self.update_status(f"已存在，跳过: {filename}")
+            return
 
         try:
             shutil.copy2(source_path, dest_path)
-            self.show_toast(f"✓ 已保存: {os.path.basename(dest_path)}", "success")
-            self.update_status(f"已保存: {os.path.basename(dest_path)}")
+            self.show_toast(f"✓ 已保存: {filename}", "success")
+            self.update_status(f"已保存: {filename}")
         except Exception as e:
             self.show_toast(f"保存失败: {str(e)}", "error")
             self.update_status(f"保存失败: {str(e)}")
