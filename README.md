@@ -15,6 +15,8 @@
 ## 截图
 
 <!-- TODO: 添加截图 -->
+![Uploading image.png…]()
+
 
 ## 下载
 
@@ -37,6 +39,7 @@
 | 鼠标滚轮 | 缩放图片 |
 | 鼠标拖动 | 平移图片 |
 | `ESC` | 退出程序 |
+| `s` | 保存图片 |
 
 ## 从源码运行
 
@@ -91,4 +94,4 @@ pyinstaller --onefile --windowed --name "图片筛选工具" --icon icon.ico ima
 
 ## 作者
 
-- [Ilya](https://github.com/your-username)
+- [Likook](https://github.com/Likook2025)
